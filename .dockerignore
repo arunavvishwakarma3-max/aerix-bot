@@ -1,0 +1,10 @@
+node_modules/
+.git/
+.gitignore
+*.log
+.env
+run.bat
+1783410002166-player-script.js
+1783410002183-player-script.js
+1783410158719-player-script.js
+1783410158733-player-script.js
