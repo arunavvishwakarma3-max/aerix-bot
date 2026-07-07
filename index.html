@@ -6,85 +6,148 @@
   <title>AERIX — Discord Bot</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0a0a1a;
+      background: #070712;
       color: #e0e0e0;
       min-height: 100vh;
+      overflow-x: hidden;
     }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
+    /* animated bg */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,240,255,.12), transparent),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(187,0,255,.08), transparent),
+        radial-gradient(ellipse 50% 40% at 80% 60%, rgba(0,240,255,.06), transparent);
+      pointer-events: none; z-index: 0;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+    /* navbar */
     nav {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 20px 0;
+      padding: 24px 0; animation: fadeDown .8s ease both;
     }
-    nav .logo { font-size: 1.5rem; font-weight: 800; color: #00f0ff; }
-    nav .logo span { color: #bb00ff; }
-    nav a {
-      color: #e0e0e0; text-decoration: none; margin-left: 24px;
-      transition: color .2s;
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    nav .logo { font-size: 1.6rem; font-weight: 800; letter-spacing: 1px; }
+    nav .logo .a { color: #00f0ff; } nav .logo .e { color: #bb00ff; } nav .logo .rix { color: #fff; }
+    nav .links a {
+      color: #999; text-decoration: none; margin-left: 28px; font-size: .92rem;
+      transition: color .25s; position: relative;
     }
-    nav a:hover { color: #00f0ff; }
+    nav .links a::after {
+      content: ''; position: absolute; left: 0; bottom: -4px; width: 0; height: 2px;
+      background: #00f0ff; transition: width .3s;
+    }
+    nav .links a:hover { color: #fff; }
+    nav .links a:hover::after { width: 100%; }
 
+    /* hero */
     .hero {
-      text-align: center; padding: 100px 0 80px;
+      text-align: center; padding: 120px 0 70px;
+      opacity: 0; transform: translateY(40px); transition: opacity .9s ease, transform .9s ease;
     }
+    .hero.visible { opacity: 1; transform: translateY(0); }
     .hero h1 {
-      font-size: 3.5rem; font-weight: 800;
-      background: linear-gradient(135deg, #00f0ff, #bb00ff);
+      font-size: 3.8rem; font-weight: 800; line-height: 1.15;
+      background: linear-gradient(135deg, #00f0ff, #bb00ff, #ff0088);
+      background-size: 200% 200%;
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: gradShift 5s ease infinite;
     }
+    @keyframes gradShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     .hero p {
-      font-size: 1.2rem; color: #888; margin: 20px 0 40px; max-width: 600px; margin-inline: auto;
+      font-size: 1.15rem; color: #777; margin: 22px auto 44px; max-width: 600px;
+      line-height: 1.7;
     }
+    .hero-btns { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
     .btn {
-      display: inline-block; padding: 14px 36px; border-radius: 8px;
-      text-decoration: none; font-weight: 600; font-size: 1rem;
-      transition: transform .2s, box-shadow .2s;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 34px; border-radius: 10px; text-decoration: none;
+      font-weight: 600; font-size: .95rem;
+      transition: transform .25s, box-shadow .3s; cursor: pointer;
     }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,240,255,.3); }
-    .btn-primary { background: #00f0ff; color: #0a0a1a; }
-    .btn-outline { border: 2px solid #555; color: #e0e0e0; margin-left: 16px; }
-    .btn-outline:hover { border-color: #00f0ff; }
+    .btn:hover { transform: translateY(-3px); }
+    .btn-primary {
+      background: linear-gradient(135deg, #00f0ff, #0099ff);
+      color: #070712; box-shadow: 0 4px 24px rgba(0,240,255,.3);
+    }
+    .btn-primary:hover { box-shadow: 0 8px 36px rgba(0,240,255,.45); }
+    .btn-outline {
+      border: 1.5px solid #333; color: #ccc;
+      background: rgba(255,255,255,.03);
+    }
+    .btn-outline:hover { border-color: #00f0ff; color: #fff; background: rgba(0,240,255,.06); }
 
+    /* stats */
+    .stats {
+      display: flex; justify-content: center; gap: 80px;
+      padding: 60px 0; text-align: center;
+      opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s ease;
+    }
+    .stats.visible { opacity: 1; transform: translateY(0); }
+    .stats .num { font-size: 2.8rem; font-weight: 800; color: #00f0ff; }
+    .stats .label { color: #666; font-size: .88rem; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* features */
     .features {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
-      gap: 24px; padding: 60px 0;
+      gap: 20px; padding: 40px 0 80px;
     }
     .card {
-      background: #111128; border-radius: 12px; padding: 28px;
-      border: 1px solid #1e1e3a; transition: border-color .3s;
+      background: rgba(17,17,40,.7); backdrop-filter: blur(4px);
+      border-radius: 14px; padding: 30px;
+      border: 1px solid rgba(255,255,255,.05);
+      transition: transform .4s, border-color .4s, box-shadow .4s;
+      opacity: 0; transform: translateY(40px);
     }
-    .card:hover { border-color: #00f0ff44; }
-    .card .icon { font-size: 2rem; margin-bottom: 12px; }
-    .card h3 { font-size: 1.2rem; margin-bottom: 8px; }
-    .card p { color: #888; font-size: .9rem; line-height: 1.5; }
-
-    .stats {
-      display: flex; justify-content: center; gap: 60px;
-      padding: 60px 0; text-align: center;
+    .card.visible {
+      opacity: 1; transform: translateY(0);
     }
-    .stats .num { font-size: 2.5rem; font-weight: 800; color: #00f0ff; }
-    .stats .label { color: #888; font-size: .9rem; margin-top: 4px; }
+    .card:hover {
+      border-color: rgba(0,240,255,.2);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 48px rgba(0,240,255,.06);
+    }
+    .card .icon { font-size: 2.2rem; margin-bottom: 14px; display: block; }
+    .card h3 { font-size: 1.15rem; margin-bottom: 10px; color: #fff; }
+    .card p { color: #777; font-size: .88rem; line-height: 1.65; }
 
+    /* particles */
+    #particles {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    }
+
+    /* footer */
     footer {
-      text-align: center; padding: 40px 0; color: #555; font-size: .85rem;
-      border-top: 1px solid #1e1e3a;
+      text-align: center; padding: 48px 0; color: #444; font-size: .85rem;
+      border-top: 1px solid rgba(255,255,255,.04);
+      opacity: 0; transition: opacity .8s ease;
     }
-    footer a { color: #00f0ff; text-decoration: none; }
+    footer.visible { opacity: 1; }
+    footer a { color: #00f0ff; text-decoration: none; transition: color .2s; }
+    footer a:hover { color: #bb00ff; }
+    footer .sep { color: #333; margin: 0 12px; }
 
     @media (max-width: 600px) {
-      .hero h1 { font-size: 2.2rem; }
+      .hero h1 { font-size: 2rem; }
+      .hero { padding: 80px 0 50px; }
       .stats { flex-direction: column; gap: 30px; }
-      nav a { margin-left: 16px; font-size: .9rem; }
+      nav .links a { margin-left: 18px; font-size: .82rem; }
+      .features { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
+  <canvas id="particles"></canvas>
   <div class="container">
     <nav>
-      <div class="logo">AE<span>R</span>IX</div>
-      <div>
+      <div class="logo"><span class="a">AE</span><span class="e">R</span><span class="rix">IX</span></div>
+      <div class="links">
         <a href="#features">Features</a>
         <a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank">Invite</a>
       </div>
@@ -92,69 +155,92 @@
 
     <section class="hero">
       <h1>Next-Gen Server Security</h1>
-      <p>Anti-nuke, music, tickets, moderation, leveling & economy — all in one bot. Trusted by servers worldwide.</p>
-      <a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank" class="btn btn-primary">Add to Discord</a>
-      <a href="#features" class="btn btn-outline">Explore Features</a>
+      <p>Anti-nuke, music, tickets, moderation, leveling & economy —<br>all in one bot. Trusted by servers worldwide.</p>
+      <div class="hero-btns">
+        <a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank" class="btn btn-primary">
+          <span>→</span> Add to Discord
+        </a>
+        <a href="#features" class="btn btn-outline">Explore Features</a>
+      </div>
     </section>
 
     <div class="stats">
-      <div><div class="num">56+</div><div class="label">Commands</div></div>
-      <div><div class="num">15</div><div class="label">Modules</div></div>
-      <div><div class="num">24/7</div><div class="label">Uptime</div></div>
+      <div><div class="num" data-target="56">0</div><div class="label">Commands</div></div>
+      <div><div class="num" data-target="15">0</div><div class="label">Modules</div></div>
+      <div><div class="num" data-target="247">0</div><div class="label">Uptime</div></div>
     </div>
 
     <section id="features" class="features">
-      <div class="card">
-        <div class="icon">🛡️</div>
-        <h3>Anti-Nuke</h3>
-        <p>Rate-limits bans, kicks, channel & role deletions. Auto-punishes raiders.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🎵</div>
-        <h3>Music</h3>
-        <p>High-quality YouTube streaming with queue, loop, shuffle & volume control.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🎫</div>
-        <h3>Tickets</h3>
-        <p>Custom ticket system with claim/close, categories & support roles.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🔨</div>
-        <h3>Moderation</h3>
-        <p>Ban, kick, mute, warn, purge, slowmode, lock — full toolkit.</p>
-      </div>
-      <div class="card">
-        <div class="icon">📈</div>
-        <h3>Leveling</h3>
-        <p>Chat & voice XP with configurable level-up rewards and roles.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🪙</div>
-        <h3>Economy</h3>
-        <p>Daily, work, rob, slots, lottery — full economy system.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🎉</div>
-        <h3>Giveaways</h3>
-        <p>Create giveaways with prizes, role gates & auto-draw winners.</p>
-      </div>
-      <div class="card">
-        <div class="icon">🏆</div>
-        <h3>Tournaments</h3>
-        <p>Brackets, team registration & match tracking.</p>
-      </div>
-      <div class="card">
-        <div class="icon">⚙️</div>
-        <h3>AutoMod</h3>
-        <p>Caps, mentions, emoji, spam & duplicate detection.</p>
-      </div>
+      <div class="card"><span class="icon">🛡️</span><h3>Anti-Nuke</h3><p>Rate-limits bans, kicks, channel & role deletions. Auto-punishes raiders in real-time.</p></div>
+      <div class="card"><span class="icon">🎵</span><h3>Music</h3><p>High-quality YouTube streaming with queue, loop, shuffle & volume control.</p></div>
+      <div class="card"><span class="icon">🎫</span><h3>Tickets</h3><p>Custom ticket system with claim/close, categories & support roles.</p></div>
+      <div class="card"><span class="icon">🔨</span><h3>Moderation</h3><p>Ban, kick, mute, warn, purge, slowmode, lock — full moderation toolkit.</p></div>
+      <div class="card"><span class="icon">📈</span><h3>Leveling</h3><p>Chat & voice XP with configurable level-up rewards and role assignments.</p></div>
+      <div class="card"><span class="icon">🪙</span><h3>Economy</h3><p>Daily, work, rob, slots, lottery — complete economy system with bank.</p></div>
+      <div class="card"><span class="icon">🎉</span><h3>Giveaways</h3><p>Create giveaways with prizes, role gates & auto-draw winners.</p></div>
+      <div class="card"><span class="icon">🏆</span><h3>Tournaments</h3><p>Brackets, team registration & match tracking for competitive events.</p></div>
+      <div class="card"><span class="icon">⚙️</span><h3>AutoMod</h3><p>Caps, mentions, emoji, spam & duplicate detection on autopilot.</p></div>
     </section>
 
     <footer>
-      <p>AERIX — Next-Gen Server Security & Management</p>
-      <p><a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank">Invite Bot</a> · <a href="https://github.com/arunavvishwakarma3-max/aerix-bot" target="_blank">GitHub</a></p>
+      <p>AERIX — Next-Gen Server Security &amp; Management</p>
+      <p>
+        <a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank">Invite Bot</a>
+        <span class="sep">·</span>
+        <a href="https://github.com/arunavvishwakarma3-max/aerix-bot" target="_blank">GitHub</a>
+      </p>
     </footer>
   </div>
+
+  <script>
+    // particles
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    resize(); addEventListener('resize', resize);
+    for (let i = 0; i < 60; i++) particles.push({
+      x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+      vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
+      r: Math.random() * 2 + .5, o: Math.random() * .4 + .1
+    });
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const p of particles) {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,240,255,${p.o})`; ctx.fill();
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    // scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          // animate numbers
+          const num = e.target.querySelector('[data-target]');
+          if (num && !num.dataset.animated) {
+            num.dataset.animated = '1';
+            const target = parseInt(num.dataset.target);
+            const dur = 1500; const step = 16;
+            const inc = target / (dur / step);
+            let cur = 0;
+            const t = setInterval(() => {
+              cur += inc;
+              if (cur >= target) { num.textContent = target >= 1000 ? '24/7' : target; clearInterval(t); }
+              else num.textContent = Math.floor(cur);
+            }, step);
+          }
+        }
+      });
+    }, { threshold: .15 });
+
+    document.querySelectorAll('.hero, .stats, .card, footer').forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
