@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AERIX — Discord Bot</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 0;
+    }
+    nav .logo { font-size: 1.5rem; font-weight: 800; color: #00f0ff; }
+    nav .logo span { color: #bb00ff; }
+    nav a {
+      color: #e0e0e0; text-decoration: none; margin-left: 24px;
+      transition: color .2s;
+    }
+    nav a:hover { color: #00f0ff; }
+
+    .hero {
+      text-align: center; padding: 100px 0 80px;
+    }
+    .hero h1 {
+      font-size: 3.5rem; font-weight: 800;
+      background: linear-gradient(135deg, #00f0ff, #bb00ff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.2rem; color: #888; margin: 20px 0 40px; max-width: 600px; margin-inline: auto;
+    }
+    .btn {
+      display: inline-block; padding: 14px 36px; border-radius: 8px;
+      text-decoration: none; font-weight: 600; font-size: 1rem;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,240,255,.3); }
+    .btn-primary { background: #00f0ff; color: #0a0a1a; }
+    .btn-outline { border: 2px solid #555; color: #e0e0e0; margin-left: 16px; }
+    .btn-outline:hover { border-color: #00f0ff; }
+
+    .features {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+      gap: 24px; padding: 60px 0;
+    }
+    .card {
+      background: #111128; border-radius: 12px; padding: 28px;
+      border: 1px solid #1e1e3a; transition: border-color .3s;
+    }
+    .card:hover { border-color: #00f0ff44; }
+    .card .icon { font-size: 2rem; margin-bottom: 12px; }
+    .card h3 { font-size: 1.2rem; margin-bottom: 8px; }
+    .card p { color: #888; font-size: .9rem; line-height: 1.5; }
+
+    .stats {
+      display: flex; justify-content: center; gap: 60px;
+      padding: 60px 0; text-align: center;
+    }
+    .stats .num { font-size: 2.5rem; font-weight: 800; color: #00f0ff; }
+    .stats .label { color: #888; font-size: .9rem; margin-top: 4px; }
+
+    footer {
+      text-align: center; padding: 40px 0; color: #555; font-size: .85rem;
+      border-top: 1px solid #1e1e3a;
+    }
+    footer a { color: #00f0ff; text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2.2rem; }
+      .stats { flex-direction: column; gap: 30px; }
+      nav a { margin-left: 16px; font-size: .9rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <div class="logo">AE<span>R</span>IX</div>
+      <div>
+        <a href="#features">Features</a>
+        <a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank">Invite</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <h1>Next-Gen Server Security</h1>
+      <p>Anti-nuke, music, tickets, moderation, leveling & economy — all in one bot. Trusted by servers worldwide.</p>
+      <a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank" class="btn btn-primary">Add to Discord</a>
+      <a href="#features" class="btn btn-outline">Explore Features</a>
+    </section>
+
+    <div class="stats">
+      <div><div class="num">56+</div><div class="label">Commands</div></div>
+      <div><div class="num">15</div><div class="label">Modules</div></div>
+      <div><div class="num">24/7</div><div class="label">Uptime</div></div>
+    </div>
+
+    <section id="features" class="features">
+      <div class="card">
+        <div class="icon">🛡️</div>
+        <h3>Anti-Nuke</h3>
+        <p>Rate-limits bans, kicks, channel & role deletions. Auto-punishes raiders.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🎵</div>
+        <h3>Music</h3>
+        <p>High-quality YouTube streaming with queue, loop, shuffle & volume control.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🎫</div>
+        <h3>Tickets</h3>
+        <p>Custom ticket system with claim/close, categories & support roles.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🔨</div>
+        <h3>Moderation</h3>
+        <p>Ban, kick, mute, warn, purge, slowmode, lock — full toolkit.</p>
+      </div>
+      <div class="card">
+        <div class="icon">📈</div>
+        <h3>Leveling</h3>
+        <p>Chat & voice XP with configurable level-up rewards and roles.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🪙</div>
+        <h3>Economy</h3>
+        <p>Daily, work, rob, slots, lottery — full economy system.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🎉</div>
+        <h3>Giveaways</h3>
+        <p>Create giveaways with prizes, role gates & auto-draw winners.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🏆</div>
+        <h3>Tournaments</h3>
+        <p>Brackets, team registration & match tracking.</p>
+      </div>
+      <div class="card">
+        <div class="icon">⚙️</div>
+        <h3>AutoMod</h3>
+        <p>Caps, mentions, emoji, spam & duplicate detection.</p>
+      </div>
+    </section>
+
+    <footer>
+      <p>AERIX — Next-Gen Server Security & Management</p>
+      <p><a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank">Invite Bot</a></p>
+    </footer>
+  </div>
+</body>
+</html>
