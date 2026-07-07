@@ -15,7 +15,6 @@
       overflow-x: hidden;
     }
 
-    /* animated bg */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -27,7 +26,6 @@
     }
     .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 
-    /* navbar */
     nav {
       display: flex; justify-content: space-between; align-items: center;
       padding: 24px 0; animation: fadeDown .8s ease both;
@@ -46,28 +44,41 @@
     nav .links a:hover { color: #fff; }
     nav .links a:hover::after { width: 100%; }
 
+    section { padding: 100px 0; }
+    .section-title {
+      text-align: center; font-size: 2.2rem; font-weight: 800; margin-bottom: 16px;
+    }
+    .section-title span { background: linear-gradient(135deg, #00f0ff, #bb00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .section-sub {
+      text-align: center; color: #666; font-size: 1.05rem; margin-bottom: 60px; max-width: 600px; margin-inline: auto;
+    }
+
     /* hero */
     .hero {
-      text-align: center; padding: 120px 0 70px;
+      text-align: center; padding: 140px 0 80px;
       opacity: 0; transform: translateY(40px); transition: opacity .9s ease, transform .9s ease;
     }
     .hero.visible { opacity: 1; transform: translateY(0); }
     .hero h1 {
-      font-size: 3.8rem; font-weight: 800; line-height: 1.15;
+      font-size: 4.2rem; font-weight: 800; line-height: 1.1;
       background: linear-gradient(135deg, #00f0ff, #bb00ff, #ff0088);
       background-size: 200% 200%;
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       animation: gradShift 5s ease infinite;
     }
     @keyframes gradShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    .hero .tagline {
+      display: inline-block; margin-top: 20px; padding: 6px 18px;
+      border: 1px solid rgba(0,240,255,.2); border-radius: 20px;
+      font-size: .82rem; color: #00f0ff; letter-spacing: 2px; text-transform: uppercase;
+    }
     .hero p {
-      font-size: 1.15rem; color: #777; margin: 22px auto 44px; max-width: 600px;
-      line-height: 1.7;
+      font-size: 1.2rem; color: #777; margin: 24px auto 44px; max-width: 650px; line-height: 1.8;
     }
     .hero-btns { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 14px 34px; border-radius: 10px; text-decoration: none;
+      padding: 15px 38px; border-radius: 10px; text-decoration: none;
       font-weight: 600; font-size: .95rem;
       transition: transform .25s, box-shadow .3s; cursor: pointer;
     }
@@ -86,41 +97,90 @@
     /* stats */
     .stats {
       display: flex; justify-content: center; gap: 80px;
-      padding: 60px 0; text-align: center;
+      padding: 40px 0; text-align: center;
       opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s ease;
     }
     .stats.visible { opacity: 1; transform: translateY(0); }
-    .stats .num { font-size: 2.8rem; font-weight: 800; color: #00f0ff; }
-    .stats .label { color: #666; font-size: .88rem; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+    .stats .num { font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, #00f0ff, #bb00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .stats .label { color: #666; font-size: .88rem; margin-top: 6px; text-transform: uppercase; letter-spacing: 2px; }
+
+    /* about */
+    .about {
+      opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s ease;
+    }
+    .about.visible { opacity: 1; transform: translateY(0); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;
+    }
+    .about-text h2 { font-size: 2rem; margin-bottom: 20px; }
+    .about-text h2 span { background: linear-gradient(135deg, #00f0ff, #bb00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .about-text p { color: #888; line-height: 1.8; margin-bottom: 16px; font-size: 1rem; }
+    .about-text .highlight { color: #00f0ff; font-weight: 600; }
+    .about-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .about-card {
+      background: rgba(17,17,40,.6); border-radius: 12px; padding: 24px;
+      border: 1px solid rgba(255,255,255,.04); text-align: center;
+    }
+    .about-card .big { font-size: 1.8rem; font-weight: 800; color: #00f0ff; }
+    .about-card p { color: #666; font-size: .82rem; margin-top: 4px; }
 
     /* features */
     .features {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
-      gap: 20px; padding: 40px 0 80px;
+      opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s ease;
+    }
+    .features.visible { opacity: 1; transform: translateY(0); }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+      gap: 20px;
     }
     .card {
-      background: rgba(17,17,40,.7); backdrop-filter: blur(4px);
-      border-radius: 14px; padding: 30px;
-      border: 1px solid rgba(255,255,255,.05);
+      background: rgba(17,17,40,.6); backdrop-filter: blur(4px);
+      border-radius: 14px; padding: 28px;
+      border: 1px solid rgba(255,255,255,.04);
       transition: transform .4s, border-color .4s, box-shadow .4s;
-      opacity: 0; transform: translateY(40px);
+      opacity: 0; transform: translateY(30px);
     }
-    .card.visible {
-      opacity: 1; transform: translateY(0);
-    }
+    .card.visible { opacity: 1; transform: translateY(0); }
     .card:hover {
-      border-color: rgba(0,240,255,.2);
-      transform: translateY(-6px);
-      box-shadow: 0 12px 48px rgba(0,240,255,.06);
+      border-color: rgba(0,240,255,.15);
+      transform: translateY(-5px);
+      box-shadow: 0 12px 48px rgba(0,240,255,.05);
     }
-    .card .icon { font-size: 2.2rem; margin-bottom: 14px; display: block; }
-    .card h3 { font-size: 1.15rem; margin-bottom: 10px; color: #fff; }
-    .card p { color: #777; font-size: .88rem; line-height: 1.65; }
+    .card .icon { font-size: 2rem; margin-bottom: 12px; display: block; }
+    .card h3 { font-size: 1.1rem; margin-bottom: 8px; color: #fff; }
+    .card p { color: #777; font-size: .85rem; line-height: 1.6; }
 
-    /* particles */
-    #particles {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    /* commands */
+    .commands-section {
+      opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s ease;
     }
+    .commands-section.visible { opacity: 1; transform: translateY(0); }
+    .commands-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 16px;
+    }
+    .cmd-group {
+      background: rgba(17,17,40,.5); border-radius: 12px; padding: 24px;
+      border: 1px solid rgba(255,255,255,.04);
+    }
+    .cmd-group h3 { color: #00f0ff; font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .cmd-group ul { list-style: none; }
+    .cmd-group li {
+      color: #888; font-size: .85rem; padding: 5px 0;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .cmd-group li .badge {
+      font-size: .7rem; padding: 2px 10px; border-radius: 10px;
+      background: rgba(0,240,255,.1); color: #00f0ff;
+    }
+
+    /* cta */
+    .cta {
+      text-align: center; padding: 80px 0;
+      opacity: 0; transform: translateY(30px); transition: opacity .8s ease, transform .8s ease;
+    }
+    .cta.visible { opacity: 1; transform: translateY(0); }
+    .cta h2 { font-size: 2.4rem; margin-bottom: 16px; }
+    .cta p { color: #777; margin-bottom: 32px; font-size: 1.05rem; }
 
     /* footer */
     footer {
@@ -133,12 +193,17 @@
     footer a:hover { color: #bb00ff; }
     footer .sep { color: #333; margin: 0 12px; }
 
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 2rem; }
-      .hero { padding: 80px 0 50px; }
+    canvas#particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.2rem; }
+      .hero { padding: 100px 0 50px; }
       .stats { flex-direction: column; gap: 30px; }
-      nav .links a { margin-left: 18px; font-size: .82rem; }
-      .features { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-cards { grid-template-columns: 1fr 1fr; }
+      .commands-grid { grid-template-columns: 1fr; }
+      section { padding: 60px 0; }
+      .section-title { font-size: 1.6rem; }
     }
   </style>
 </head>
@@ -148,38 +213,94 @@
     <nav>
       <div class="logo"><span class="a">AE</span><span class="e">R</span><span class="rix">IX</span></div>
       <div class="links">
+        <a href="#about">About</a>
         <a href="#features">Features</a>
+        <a href="#commands">Commands</a>
         <a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank">Invite</a>
       </div>
     </nav>
 
+    <!-- hero -->
     <section class="hero">
-      <h1>Next-Gen Server Security</h1>
-      <p>Anti-nuke, music, tickets, moderation, leveling & economy —<br>all in one bot. Trusted by servers worldwide.</p>
+      <div class="tagline">Next-Gen Security &bull; All-in-One</div>
+      <h1>Command Your Server<br>With AERIX</h1>
+      <p>Anti-nuke protection, music streaming, ticket system, moderation, leveling, economy, giveaways, tournaments &amp; more — all in a single, lightweight Discord bot.</p>
       <div class="hero-btns">
-        <a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank" class="btn btn-primary">
-          <span>→</span> Add to Discord
-        </a>
+        <a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank" class="btn btn-primary">→ Add to Discord</a>
         <a href="#features" class="btn btn-outline">Explore Features</a>
       </div>
     </section>
 
+    <!-- stats -->
     <div class="stats">
       <div><div class="num" data-target="56">0</div><div class="label">Commands</div></div>
       <div><div class="num" data-target="15">0</div><div class="label">Modules</div></div>
-      <div><div class="num" data-target="247">0</div><div class="label">Uptime</div></div>
+      <div><div class="num" data-target="100">0</div><div class="label">Uptime %</div></div>
+      <div><div class="num" data-target="247">0</div><div class="label">24/7</div></div>
     </div>
 
+    <!-- about -->
+    <section id="about" class="about">
+      <div class="about-grid">
+        <div class="about-text">
+          <h2>What is <span>AERIX</span>?</h2>
+          <p>AERIX is a premium all-in-one Discord bot built for <span class="highlight">security</span>, <span class="highlight">automation</span>, and <span class="highlight">engagement</span>. From real-time anti-nuke protection that stops raiders in their tracks, to a full music streaming system, custom tickets, moderation, leveling, economy, giveaways, and tournaments — AERIX replaces 5+ bots with one.</p>
+          <p>Powered by discord.js v14 and SQLite, it delivers <span class="highlight">blazing-fast performance</span> with zero external dependencies. Trusted by servers of all sizes.</p>
+        </div>
+        <div class="about-cards">
+          <div class="about-card"><div class="big">56+</div><p>Slash Commands</p></div>
+          <div class="about-card"><div class="big">15</div><p>Categories</p></div>
+          <div class="about-card"><div class="big">99.9%</div><p>Uptime</p></div>
+          <div class="about-card"><div class="big">1</div><p>Bot to Rule Them All</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- features -->
     <section id="features" class="features">
-      <div class="card"><span class="icon">🛡️</span><h3>Anti-Nuke</h3><p>Rate-limits bans, kicks, channel & role deletions. Auto-punishes raiders in real-time.</p></div>
-      <div class="card"><span class="icon">🎵</span><h3>Music</h3><p>High-quality YouTube streaming with queue, loop, shuffle & volume control.</p></div>
-      <div class="card"><span class="icon">🎫</span><h3>Tickets</h3><p>Custom ticket system with claim/close, categories & support roles.</p></div>
-      <div class="card"><span class="icon">🔨</span><h3>Moderation</h3><p>Ban, kick, mute, warn, purge, slowmode, lock — full moderation toolkit.</p></div>
-      <div class="card"><span class="icon">📈</span><h3>Leveling</h3><p>Chat & voice XP with configurable level-up rewards and role assignments.</p></div>
-      <div class="card"><span class="icon">🪙</span><h3>Economy</h3><p>Daily, work, rob, slots, lottery — complete economy system with bank.</p></div>
-      <div class="card"><span class="icon">🎉</span><h3>Giveaways</h3><p>Create giveaways with prizes, role gates & auto-draw winners.</p></div>
-      <div class="card"><span class="icon">🏆</span><h3>Tournaments</h3><p>Brackets, team registration & match tracking for competitive events.</p></div>
-      <div class="card"><span class="icon">⚙️</span><h3>AutoMod</h3><p>Caps, mentions, emoji, spam & duplicate detection on autopilot.</p></div>
+      <h2 class="section-title">Everything You <span>Need</span></h2>
+      <p class="section-sub">A full toolkit for server management, entertainment, and community engagement.</p>
+      <div class="features-grid">
+        <div class="card"><span class="icon">🛡️</span><h3>Anti-Nuke</h3><p>Rate-limits bans, kicks, channel &amp; role deletions in a rolling 60s window. Auto-punishes raiders with configurable actions. Whitelist trusted users &amp; roles.</p></div>
+        <div class="card"><span class="icon">🎵</span><h3>Music System</h3><p>High-quality YouTube streaming via yt-dlp. Full queue management, loop modes (off/song/queue), shuffle, volume control, and an interactive now-playing panel.</p></div>
+        <div class="card"><span class="icon">🎫</span><h3>Ticket System</h3><p>Per-user ticket channels with category organization. Claim and close functionality. Configurable support roles and max tickets per user.</p></div>
+        <div class="card"><span class="icon">🔨</span><h3>Moderation</h3><p>Complete toolkit: ban, kick, mute, warn, purge messages, slowmode, and channel lock/unlock. Full permission-based access control.</p></div>
+        <div class="card"><span class="icon">📈</span><h3>Leveling &amp; XP</h3><p>Earn XP through chat messages and voice activity. Configurable level-up rewards, role assignments, and leaderboards. Up to level 1000.</p></div>
+        <div class="card"><span class="icon">🪙</span><h3>Economy</h3><p>Full economy with daily/weekly/monthly rewards, work, rob, gambling, slots, lottery, and bank system with interest rates.</p></div>
+        <div class="card"><span class="icon">🎉</span><h3>Giveaways</h3><p>Create giveaways with prizes, duration, and optional required roles. Auto-draws winners and announces results. Enter and leave with a click.</p></div>
+        <div class="card"><span class="icon">🏆</span><h3>Tournaments</h3><p>Team registration, bracket generation, and match tracking. Perfect for competitive gaming communities and events.</p></div>
+        <div class="card"><span class="icon">⚙️</span><h3>Auto-Moderation</h3><p>Configurable limits on caps, mentions, emojis, duplicate messages, lines, and newlines. Keeps your chat clean automatically.</p></div>
+        <div class="card"><span class="icon">👋</span><h3>Welcome / Goodbye</h3><p>Customizable join and leave messages with optional canvas-generated welcome images. Make new members feel at home.</p></div>
+        <div class="card"><span class="icon">🔐</span><h3>Reaction Roles</h3><p>Button-based role assignment system. Users can self-assign and remove roles with a single click. Full role menu support.</p></div>
+        <div class="card"><span class="icon">📊</span><h3>Logging &amp; Info</h3><p>Detailed audit logging for message edits/deletes, joins/leaves, bans, voice state changes, and more. Server info, user info, role info commands.</p></div>
+      </div>
+    </section>
+
+    <!-- commands -->
+    <section id="commands" class="commands-section">
+      <h2 class="section-title"><span>Commands</span> Overview</h2>
+      <p class="section-sub">56+ slash commands across 15 categories. Every command supports both slash (/) and prefix (!) usage.</p>
+      <div class="commands-grid">
+        <div class="cmd-group"><h3>🛡️ Moderation</h3><ul><li><span>ban</span><span class="badge">9</span></li><li><span>kick</span><span class="badge">9</span></li><li><span>mute</span><span class="badge">9</span></li><li><span>warn</span><span class="badge">9</span></li><li><span>purge</span><span class="badge">9</span></li><li><span>slowmode</span><span class="badge">9</span></li><li><span>lock / unlock</span><span class="badge">9</span></li><li><span>warnings</span><span class="badge">9</span></li></ul></div>
+        <div class="cmd-group"><h3>🎵 Music</h3><ul><li><span>play</span><span class="badge">9</span></li><li><span>skip</span><span class="badge">9</span></li><li><span>stop</span><span class="badge">9</span></li><li><span>pause / resume</span><span class="badge">9</span></li><li><span>queue</span><span class="badge">9</span></li><li><span>loop</span><span class="badge">9</span></li><li><span>volume</span><span class="badge">9</span></li><li><span>setup</span><span class="badge">9</span></li></ul></div>
+        <div class="cmd-group"><h3>🔧 Utility</h3><ul><li><span>help</span><span class="badge">11</span></li><li><span>ping</span><span class="badge">11</span></li><li><span>botinfo</span><span class="badge">11</span></li><li><span>serverinfo</span><span class="badge">11</span></li><li><span>userinfo</span><span class="badge">11</span></li><li><span>avatar</span><span class="badge">11</span></li><li><span>embed</span><span class="badge">11</span></li><li><span>poll</span><span class="badge">11</span></li><li><span>snipe</span><span class="badge">11</span></li><li><span>uptime</span><span class="badge">11</span></li><li><span>roleinfo</span><span class="badge">11</span></li></ul></div>
+        <div class="cmd-group"><h3>📈 Leveling</h3><ul><li><span>rank</span><span class="badge">3</span></li><li><span>levels</span><span class="badge">3</span></li><li><span>rewards</span><span class="badge">3</span></li></ul></div>
+        <div class="cmd-group"><h3>🪙 Economy</h3><ul><li><span>daily / weekly / monthly</span><span class="badge">6</span></li><li><span>work</span><span class="badge">6</span></li><li><span>rob</span><span class="badge">6</span></li><li><span>slots</span><span class="badge">6</span></li><li><span>lottery</span><span class="badge">6</span></li></ul></div>
+        <div class="cmd-group"><h3>🎫 Tickets</h3><ul><li><span>ticket</span><span class="badge">2</span></li><li><span>ticket-setup</span><span class="badge">2</span></li></ul></div>
+        <div class="cmd-group"><h3>🎉 Giveaways</h3><ul><li><span>giveaway</span><span class="badge">1</span></li></ul></div>
+        <div class="cmd-group"><h3>🏆 Tournaments</h3><ul><li><span>tournament</span><span class="badge">1</span></li></ul></div>
+        <div class="cmd-group"><h3>⚙️ AutoMod</h3><ul><li><span>automod</span><span class="badge">1</span></li></ul></div>
+        <div class="cmd-group"><h3>🛡️ Admin</h3><ul><li><span>antinuke</span><span class="badge">2</span></li><li><span>setup</span><span class="badge">2</span></li></ul></div>
+        <div class="cmd-group"><h3>👋 Welcome</h3><ul><li><span>setwelcome</span><span class="badge">3</span></li><li><span>setgoodbye</span><span class="badge">3</span></li><li><span>welcome</span><span class="badge">3</span></li></ul></div>
+        <div class="cmd-group"><h3>🔐 Roles</h3><ul><li><span>role</span><span class="badge">4</span></li><li><span>roles</span><span class="badge">4</span></li><li><span>autorole</span><span class="badge">4</span></li><li><span>joinroles</span><span class="badge">4</span></li></ul></div>
+      </div>
+    </section>
+
+    <!-- cta -->
+    <section class="cta">
+      <h2>Ready to <span style="background:linear-gradient(135deg,#00f0ff,#bb00ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Take Control</span>?</h2>
+      <p>Add AERIX to your server and experience the difference. Free, fast, and feature-rich.</p>
+      <a href="https://discord.com/oauth2/authorize?client_id=1521137370186125443&permissions=8&scope=bot" target="_blank" class="btn btn-primary">→ Add to Discord</a>
     </section>
 
     <footer>
@@ -193,15 +314,14 @@
   </div>
 
   <script>
-    // particles
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let particles = [];
     function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
     resize(); addEventListener('resize', resize);
-    for (let i = 0; i < 60; i++) particles.push({
+    for (let i = 0; i < 70; i++) particles.push({
       x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-      vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
+      vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35,
       r: Math.random() * 2 + .5, o: Math.random() * .4 + .1
     });
     function drawParticles() {
@@ -217,14 +337,13 @@
     }
     drawParticles();
 
-    // scroll reveal
     const observer = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) {
           e.target.classList.add('visible');
-          // animate numbers
-          const num = e.target.querySelector('[data-target]');
-          if (num && !num.dataset.animated) {
+          const nums = e.target.querySelectorAll('[data-target]');
+          nums.forEach(num => {
+            if (num.dataset.animated) return;
             num.dataset.animated = '1';
             const target = parseInt(num.dataset.target);
             const dur = 1500; const step = 16;
@@ -235,12 +354,12 @@
               if (cur >= target) { num.textContent = target >= 1000 ? '24/7' : target; clearInterval(t); }
               else num.textContent = Math.floor(cur);
             }, step);
-          }
+          });
         }
       });
-    }, { threshold: .15 });
+    }, { threshold: .12 });
 
-    document.querySelectorAll('.hero, .stats, .card, footer').forEach(el => observer.observe(el));
+    document.querySelectorAll('.hero, .stats, .about, .features, .commands-section, .cta, footer, .card').forEach(el => observer.observe(el));
   </script>
 </body>
 </html>
