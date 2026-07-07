@@ -1,3 +1,4 @@
+import { createServer } from 'node:http';
 import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
 import config from './config.js';
 import logger from './utils/logger.js';
@@ -38,6 +39,14 @@ if (!config.token) {
 client.login(config.token).catch(error => {
   logger.error('Bot login failed:', error.message);
   process.exit(1);
+});
+
+const port = process.env.PORT || 3000;
+createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('AERIX bot is running');
+}).listen(port, () => {
+  logger.info(`Health server listening on port ${port}`);
 });
 
 process.on('unhandledRejection', (error) => {
