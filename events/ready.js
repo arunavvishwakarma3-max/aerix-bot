@@ -6,7 +6,7 @@ import config from '../config.js';
 const startupLog = new Set();
 
 export default {
-  name: 'clientReady',
+  name: 'ready',
   once: true,
   async execute(client) {
     const totalUsers = client.guilds.cache.reduce((acc, g) => acc + g.memberCount, 0);
