@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: aerix-bot
+    runtime: docker
+    repo: https://github.com/arunavvishwakarma3-max/aerix-bot.git
+    plan: free
+    region: singapore
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: CLIENT_ID
+        sync: false
+      - key: GUILD_ID
+        value: ""
+      - key: OWNER_ID
+        value: ""
+      - key: LAVALINK_NODES
+        value: '[{"name":"Jirayu","host":"lavalink.jirayu.net","port":13592,"auth":"youshallnotpass"}]'
+      - key: PORT
+        value: "3000"
+      - key: DB_PATH
+        value: "/data/bot.db"
+    disks:
+      - name: data
+        mountPath: /data
+        sizeGB: 1

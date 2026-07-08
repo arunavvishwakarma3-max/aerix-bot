@@ -170,9 +170,11 @@ export default {
     timeout: 300000,
   },
   lavalink: {
-    nodes: [
-      { name: 'Jirayu', host: 'lavalink.jirayu.net', port: 13592, auth: 'youshallnotpass' },
-    ],
+    nodes: process.env.LAVALINK_NODES
+      ? JSON.parse(process.env.LAVALINK_NODES)
+      : [
+          { name: 'Jirayu', host: 'lavalink.jirayu.net', port: 13592, auth: 'youshallnotpass' },
+        ],
   },
   logging: {
     defaultEvents: ["messageDelete", "messageEdit", "memberJoin", "memberLeave", "memberBan", "memberUnban", "voiceJoin", "voiceLeave", "voiceMove", "channelCreate", "channelDelete", "roleCreate", "roleDelete"],

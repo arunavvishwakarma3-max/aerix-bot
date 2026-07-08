@@ -6,8 +6,8 @@ import crypto from 'node:crypto';
 import logger from '../utils/logger.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbDir = path.resolve(__dirname);
-const dbPath = path.resolve(dbDir, 'bot.db');
+const dbDir = process.env.DB_PATH ? path.dirname(process.env.DB_PATH) : path.resolve(__dirname);
+const dbPath = process.env.DB_PATH || path.resolve(dbDir, 'bot.db');
 
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });

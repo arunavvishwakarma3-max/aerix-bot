@@ -8,9 +8,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+RUN mkdir -p /data && chown -R node:node /data
+
 COPY package*.json ./
 RUN npm install
 
 COPY . .
+
+EXPOSE 3000
+
+USER node
 
 CMD ["node", "index.js"]
