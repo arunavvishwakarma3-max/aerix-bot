@@ -62,7 +62,7 @@ export default {
     try {
       await loadGiveaways(client);
     } catch (error) {
-      logger.warn('Could not load giveaways (MongoDB not connected)');
+      logger.warn('Could not load giveaways');
     }
 
     if (client.config.guildId && !startupLog.has(client.config.guildId)) {

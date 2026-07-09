@@ -5,13 +5,14 @@ services:
     repo: https://github.com/arunavvishwakarma3-max/aerix-bot.git
     plan: free
     region: singapore
+    healthCheckPath: /
     envVars:
       - key: BOT_TOKEN
         sync: false
       - key: CLIENT_ID
         sync: false
       - key: GUILD_ID
-        value: ""
+        value: "1317728732341080064"
       - key: OWNER_ID
         value: ""
       - key: LAVALINK_NODES
