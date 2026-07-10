@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 export default {
-  token: process.env.BOT_TOKEN || "",
+  token: (process.env.BOT_TOKEN || "").trim(),
   clientId: process.env.CLIENT_ID || "",
   guildId: process.env.GUILD_ID || "",
   ownerId: process.env.OWNER_ID || "",
