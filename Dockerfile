@@ -8,12 +8,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-RUN mkdir -p /data && chown -R node:node /data
+RUN mkdir -p /app/database
 
 COPY package*.json ./
 RUN npm install
 
 COPY . .
+
+RUN chown -R node:node /app
 
 EXPOSE 3000
 

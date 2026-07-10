@@ -20,8 +20,4 @@ services:
       - key: PORT
         value: "3000"
       - key: DB_PATH
-        value: "/data/bot.db"
-    disks:
-      - name: data
-        mountPath: /data
-        sizeGB: 1
+        value: "/app/database/bot.db"
