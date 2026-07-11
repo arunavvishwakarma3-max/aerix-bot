@@ -13,15 +13,15 @@ export class MusicPlayer {
         name: n.name,
         url: `${n.host}:${n.port}`,
         auth: n.auth,
+        secure: n.secure || false,
       })),
       {
-        moveOnDisconnect: true,
+        moveOnDisconnect: false,
         resume: true,
         resumeTimeout: 30,
         reconnectTries: 5,
         reconnectInterval: 5,
         restTimeout: 15000,
-        userAgent: 'AERIX/2.0',
       }
     );
 
@@ -29,6 +29,9 @@ export class MusicPlayer {
     this.shoukaku.on('error', (name, err) => logger.error(`Lavalink node "${name}" error: ${err.message}`));
     this.shoukaku.on('close', (name, code, reason) => logger.warn(`Lavalink node "${name}" closed: ${code} ${reason}`));
     this.shoukaku.on('debug', (name, msg) => logger.debug(`[${name}] ${msg}`));
+    this.shoukaku.on('connecting', (name) => logger.info(`Lavalink node "${name}" connecting...`));
+    this.shoukaku.on('disconnect', (name, moved) => logger.warn(`Lavalink node "${name}" disconnected (moved: ${moved})`));
+    this.shoukaku.on('reconnecting', (name, attempt) => logger.info(`Lavalink node "${name}" reconnecting (attempt ${attempt})...`));
   }
 
   getQueue(guildId) {

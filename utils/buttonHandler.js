@@ -1,6 +1,7 @@
 import { EmbedBuilder, ActionRowBuilder, ChannelType, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { row, primaryButton, successButton, dangerButton, button } from './components.js';
 import { createEmbed } from './embed.js';
+import { lyricsStore, default as lyricsCommand } from '../commands/music/lyrics.js';
 import Ticket from '../models/Ticket.js';
 import Guild from '../models/Guild.js';
 import config from '../config.js';
@@ -373,5 +374,38 @@ export async function handleButton(interaction, client) {
     }
     await interaction.member.roles.add(role);
     return interaction.reply({ content: `${config.emoji.check} Added ${role.name}.`, ephemeral: true });
+  }
+
+  // === LYRICS BUTTONS ===
+  if (customId.startsWith('lyrics-')) {
+    const state = lyricsStore.get(interaction.user.id);
+    if (!state) return interaction.reply({ content: `${config.emoji.error} Lyrics expired. Run \`/lyrics\` again.`, ephemeral: true });
+
+    const action = customId.slice(7);
+    if (action === 'prev' && state.page > 0) state.page--;
+    else if (action === 'next' && state.page < state.totalPages - 1) state.page++;
+    else return interaction.deferUpdate();
+
+    const { song, page, totalPages } = state;
+    const lines = song.lyrics.split('\n');
+    const LYRICS_PER_PAGE = 12;
+    const start = page * LYRICS_PER_PAGE;
+    const pageLines = lines.slice(start, start + LYRICS_PER_PAGE);
+    const content = pageLines.join('\n') || '*No lyrics on this page.*';
+
+    const progressBar = `${'━'.repeat(Math.round((page + 1) / totalPages * 15))}${'░'.repeat(15 - Math.round((page + 1) / totalPages * 15))} ${page + 1}/${totalPages}`;
+
+    const embed = createEmbed({
+      title: `${config.emoji.music} ${song.title}`,
+      description: `**${song.artist}**${song.album ? ` • ${song.album}` : ''}\n\n${content}\n\n${progressBar}`,
+      color: config.colors.blurple,
+      footer: 'AERIX • Lyrics',
+    });
+
+    const prev = new ButtonBuilder().setCustomId('lyrics-prev').setEmoji('◀️').setStyle(ButtonStyle.Secondary).setDisabled(page === 0);
+    const next = new ButtonBuilder().setCustomId('lyrics-next').setEmoji('▶️').setStyle(ButtonStyle.Secondary).setDisabled(page >= totalPages - 1);
+    const buttons = new ActionRowBuilder().addComponents(prev, next);
+
+    await interaction.update({ embeds: [embed], components: totalPages > 1 ? [buttons] : [] });
   }
 }
