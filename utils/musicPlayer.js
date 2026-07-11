@@ -16,22 +16,68 @@ export class MusicPlayer {
         secure: n.secure || false,
       })),
       {
-        moveOnDisconnect: false,
+        moveOnDisconnect: true,
         resume: true,
         resumeTimeout: 30,
-        reconnectTries: 5,
-        reconnectInterval: 5,
-        restTimeout: 15000,
+        reconnectTries: 15,
+        reconnectInterval: 3,
+        restTimeout: 30000,
       }
     );
 
-    this.shoukaku.on('ready', (name) => logger.info(`Lavalink node "${name}" ready`));
+    this.shoukaku.on('ready', (name) => {
+      logger.info(`Lavalink node "${name}" ready`);
+      this._broadcastReady(name);
+    });
     this.shoukaku.on('error', (name, err) => logger.error(`Lavalink node "${name}" error: ${err.message}`));
     this.shoukaku.on('close', (name, code, reason) => logger.warn(`Lavalink node "${name}" closed: ${code} ${reason}`));
-    this.shoukaku.on('debug', (name, msg) => logger.debug(`[${name}] ${msg}`));
+    this.shoukaku.on('debug', (name, msg) => {
+      if (msg.includes('Node') || msg.includes('error') || msg.includes('reconnect')) {
+        logger.debug(`[${name}] ${msg}`);
+      }
+    });
     this.shoukaku.on('connecting', (name) => logger.info(`Lavalink node "${name}" connecting...`));
-    this.shoukaku.on('disconnect', (name, moved) => logger.warn(`Lavalink node "${name}" disconnected (moved: ${moved})`));
+    this.shoukaku.on('disconnect', (name, moved) => {
+      logger.warn(`Lavalink node "${name}" disconnected (moved: ${moved})`);
+      this._reconnectNode(name);
+    });
     this.shoukaku.on('reconnecting', (name, attempt) => logger.info(`Lavalink node "${name}" reconnecting (attempt ${attempt})...`));
+
+    this._reconnectInterval = setInterval(() => this._healthCheck(), 30000);
+  }
+
+  _broadcastReady(name) {
+    for (const [guildId, queue] of this.queues) {
+      if (queue.pendingNode && queue.pendingNode === name) {
+        queue.pendingNode = null;
+        if (queue.songs.length > 0 && !queue.playing) {
+          this.playNext(guildId).catch(() => {});
+        }
+      }
+    }
+  }
+
+  async _reconnectNode(name) {
+    const node = this.shoukaku.nodes.get(name);
+    if (!node || node.state === 1) return;
+    logger.info(`Attempting manual reconnect to node "${name}"...`);
+    try {
+      await node.connect();
+    } catch (err) {
+      logger.error(`Manual reconnect failed for "${name}": ${err.message}`);
+    }
+  }
+
+  _healthCheck() {
+    const connected = [...this.shoukaku.nodes.values()].filter(n => n.state === 1);
+    if (connected.length === 0) {
+      logger.warn('No Lavalink nodes connected — attempting reconnect to all...');
+      for (const [name, node] of this.shoukaku.nodes) {
+        if (node.state !== 1) {
+          node.connect().catch(() => {});
+        }
+      }
+    }
   }
 
   getQueue(guildId) {
@@ -51,6 +97,7 @@ export class MusicPlayer {
         leaveTimeout: null,
         panelMessageId: null,
         panelChannelId: null,
+        pendingNode: null,
       };
       this.queues.set(guildId, queue);
     }
@@ -59,7 +106,29 @@ export class MusicPlayer {
 
   getNode() {
     const nodes = [...this.shoukaku.nodes.values()].filter(n => n.state === 1);
-    return nodes.sort((a, b) => a.penalties - b.penalties)[0] ?? null;
+    if (nodes.length) return nodes.sort((a, b) => a.penalties - b.penalties)[0];
+
+    const any = [...this.shoukaku.nodes.values()];
+    if (any.length) {
+      const fallback = any.sort((a, b) => a.penalties - b.penalties)[0];
+      if (fallback && fallback.state !== 1) {
+        logger.warn(`No connected nodes — trying to use "${fallback.name}" (state: ${fallback.state})`);
+        fallback.connect().catch(() => {});
+      }
+    }
+    return null;
+  }
+
+  async getNodeWithRetry(retries = 3, delay = 2000) {
+    for (let i = 0; i < retries; i++) {
+      const node = this.getNode();
+      if (node) return node;
+      if (i < retries - 1) {
+        logger.info(`No node available, retrying in ${delay}ms... (${i + 1}/${retries})`);
+        await new Promise(r => setTimeout(r, delay));
+      }
+    }
+    return null;
   }
 
   async join(channel) {
@@ -83,8 +152,8 @@ export class MusicPlayer {
 
     try {
       const search = query.match(/^https?:\/\//) ? query : `ytsearch:${query}`;
-      const node = this.getNode();
-      if (!node) throw new Error('No Lavalink nodes available');
+      const node = await this.getNodeWithRetry(3, 2000);
+      if (!node) throw new Error('No Lavalink nodes available — all nodes are down. Please try again later.');
       const result = await node.rest.resolve(search);
 
       if (!result || result.loadType === 'empty' || result.loadType === 'error') {
@@ -151,7 +220,10 @@ export class MusicPlayer {
 
       if (!queue.playing) await this.playNext(guildId);
     } catch (err) {
-      await interaction.editReply({ embeds: [this.embed({ color: config.colors.error, description: `${config.emoji.cross} Error: ${err.message}` })] });
+      const msg = err.message.includes('No Lavalink nodes')
+        ? `${config.emoji.cross} Music service is temporarily unavailable. Nodes are reconnecting, please try again in a few seconds.`
+        : `${config.emoji.cross} Error: ${err.message}`;
+      await interaction.editReply({ embeds: [this.embed({ color: config.colors.error, description: msg })] });
       logger.error('Play error:', err.message);
     }
   }
@@ -221,6 +293,13 @@ export class MusicPlayer {
     try {
       if (!queue.player) {
         queue.playing = false;
+        return;
+      }
+      const node = this.getNode();
+      if (!node) {
+        queue.pendingNode = 'any';
+        queue.playing = false;
+        logger.warn(`No node for playNext in guild ${guildId} — waiting for node reconnect`);
         return;
       }
       await queue.player.playTrack({ track: { encoded: song.track } });
@@ -384,6 +463,16 @@ export class MusicPlayer {
         queue.player.clean();
       }
       this.queues.delete(guildId);
+    }
+  }
+
+  destroy() {
+    if (this._reconnectInterval) {
+      clearInterval(this._reconnectInterval);
+      this._reconnectInterval = null;
+    }
+    for (const [guildId] of this.queues) {
+      this.leave(guildId);
     }
   }
 
