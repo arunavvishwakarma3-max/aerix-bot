@@ -68,81 +68,27 @@ export default {
           return message.reply({ embeds: [createEmbed({ color: config.colors.error, description: `${config.emoji.cross} Join a voice channel first!` })] }).catch(() => {});
         }
 
+        const sent = await message.reply({ embeds: [createEmbed({ color: config.colors.info, description: `${config.emoji.loading} Searching for **${query}**...` })] }).catch(() => null);
+        if (!sent) return;
+
+        const mockInteraction = {
+          guild: message.guild,
+          member: message.member,
+          channel: message.channel,
+          user: message.author,
+          client,
+          replied: false,
+          reply: () => Promise.resolve(),
+          deferReply: () => Promise.resolve(),
+          editReply: (opts) => sent.edit(opts).catch(() => {}),
+        };
+
         try {
-          const queue = client.music.getQueue(message.guild.id);
-          const node = client.music.getNode();
-          if (!node) {
-            return message.reply({ embeds: [createEmbed({ color: config.colors.error, description: `${config.emoji.cross} Lavalink is not connected.` })] }).catch(() => {});
-          }
-
-          const sent = await message.reply({ embeds: [createEmbed({ color: config.colors.info, description: `${config.emoji.loading} Searching for **${query}**...` })] });
-
-          const search = query.match(/^https?:\/\//) ? query : `ytsearch:${query}`;
-          const result = await node.rest.resolve(search);
-
-          if (!result || result.loadType === 'empty' || result.loadType === 'error') {
-            return sent.edit({ embeds: [createEmbed({ color: config.colors.error, description: `${config.emoji.cross} No results found for **${query}**.` })] }).catch(() => {});
-          }
-
-          const tracks = Array.isArray(result.data) ? result.data : result.data?.tracks ?? [result.data].filter(Boolean);
-          if (!tracks.length) {
-            return sent.edit({ embeds: [createEmbed({ color: config.colors.error, description: `${config.emoji.cross} No results found for **${query}**.` })] }).catch(() => {});
-          }
-
-          if (result.loadType === 'playlist') {
-            for (const track of tracks) {
-              queue.songs.push({
-                title: track.info.title,
-                uri: track.info.uri,
-                duration: client.music.formatDuration(track.info.length),
-                length: track.info.length,
-                thumbnail: `https://i.ytimg.com/vi/${track.info.identifier}/default.jpg`,
-                author: track.info.author,
-                requestedBy: message.author.id,
-                track: track.encoded,
-              });
-            }
-            if (queue.loop === 'queue' && queue.originalSongs.length === 0) {
-              queue.originalSongs = queue.songs.map(s => ({ ...s }));
-            }
-            await sent.edit({ embeds: [createEmbed({ color: config.colors.success, description: `${config.emoji.music} Added **${tracks.length}** songs from playlist` })] }).catch(() => {});
-            if (!queue.playing) await client.music.playNext(message.guild.id);
-          } else {
-            const track = tracks[0];
-            const song = {
-              title: track.info.title,
-              uri: track.info.uri,
-              duration: client.music.formatDuration(track.info.length),
-              length: track.info.length,
-              thumbnail: `https://i.ytimg.com/vi/${track.info.identifier}/default.jpg`,
-              author: track.info.author,
-              requestedBy: message.author.id,
-              track: track.encoded,
-            };
-
-            queue.songs.push(song);
-            if (queue.loop === 'queue' && queue.originalSongs.length === 0) {
-              queue.originalSongs = queue.songs.map(s => ({ ...s }));
-            }
-
-            if (!queue.player || !queue.connection) {
-              queue.player = await client.music.join(vc);
-              queue.voiceChannel = vc;
-              queue.connection = true;
-              client.music.setupPlayerEvents(message.guild.id);
-            } else {
-              client.music.cancelLeave(message.guild.id);
-            }
-            queue.textChannel = message.channel;
-
-            await sent.edit({ embeds: [createEmbed({ color: config.colors.success, description: `${config.emoji.music} Added **${song.title}**` })] }).catch(() => {});
-            if (!queue.playing) await client.music.playNext(message.guild.id);
-          }
-
+          await client.music.play(message.guild.id, query, mockInteraction);
           logger.command(`${message.author.tag} used @mention play: ${query}`);
         } catch (err) {
           logger.error('Mention play error:', err);
-          message.reply({ embeds: [createEmbed({ color: config.colors.error, description: `${config.emoji.cross} Error: ${err.message}` })] }).catch(() => {});
+          sent.edit({ embeds: [createEmbed({ color: config.colors.error, description: `${config.emoji.cross} Error: ${err.message}` })] }).catch(() => {});
         }
         return;
       }
