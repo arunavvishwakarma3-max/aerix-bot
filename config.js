@@ -173,8 +173,8 @@ export default {
     nodes: process.env.LAVALINK_NODES
       ? JSON.parse(process.env.LAVALINK_NODES)
       : [
+          { name: 'Millohost', host: 'lava-v4.millohost.my.id', port: 443, auth: 'https://discord.gg/mjS5J2K3ep', secure: true },
           { name: 'Jirayu', host: 'lavalink.jirayu.net', port: 13592, auth: 'youshallnotpass', secure: false },
-          { name: 'HeavenCloud', host: '89.106.84.59', port: 4000, auth: 'heavencloud.in', secure: false },
         ],
   },
   logging: {

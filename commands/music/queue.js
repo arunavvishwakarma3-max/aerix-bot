@@ -12,8 +12,8 @@ export default {
       return interaction.reply({ embeds: [createEmbed({ color: config.colors.info, description: `${config.emoji.music || '🎵'} Queue is empty.` })], ephemeral: true });
     }
 
-    const songList = queue.songs.slice(0, 20).map((s, i) => `**${i + 1}.** [${s.title}](${s.url}) — \`${s.duration || 'Unknown'}\``).join('\n');
-    const nowPlaying = queue.currentSong ? `**[${queue.currentSong.title}](${queue.currentSong.url})** — \`${queue.currentSong.duration || 'Unknown'}\`` : 'None';
+    const songList = queue.songs.slice(0, 20).map((s, i) => `**${i + 1}.** [${s.title}](${s.uri}) — \`${s.duration || 'Unknown'}\``).join('\n');
+    const nowPlaying = queue.currentSong ? `**[${queue.currentSong.title}](${queue.currentSong.uri})** — \`${queue.currentSong.duration || 'Unknown'}\`` : 'None';
 
     const embed = createEmbed({
       title: `${config.emoji.music || '🎵'} Music Queue`,

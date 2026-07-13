@@ -60,6 +60,17 @@ function buildButtons(page, totalPages) {
 
 export const lyricsStore = new Map();
 
+const LYRICS_TTL = 5 * 60 * 1000;
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [userId, state] of lyricsStore) {
+    if (now - state.createdAt > LYRICS_TTL) {
+      lyricsStore.delete(userId);
+    }
+  }
+}, 60_000);
+
 export default {
   data: new SlashCommandBuilder()
     .setName('lyrics')
@@ -97,7 +108,7 @@ export default {
     const totalPages = Math.ceil(lines.length / LYRICS_PER_PAGE);
     const page = 0;
 
-    lyricsStore.set(interaction.user.id, { song, page, totalPages, messageId: null });
+    lyricsStore.set(interaction.user.id, { song, page, totalPages, messageId: null, createdAt: Date.now() });
 
     const embed = buildLyricsEmbed(song, page, totalPages);
     const buttons = buildButtons(page, totalPages);

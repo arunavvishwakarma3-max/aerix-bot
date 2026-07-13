@@ -11,7 +11,13 @@ export default {
     if (!queue || !queue.playing) {
       return interaction.reply({ embeds: [createEmbed({ color: config.colors.error, description: `${config.emoji.cross || '❌'} Nothing is playing.` })], ephemeral: true });
     }
-    client.music.togglePause(interaction.guild.id);
+    if (queue.paused) {
+      return interaction.reply({ embeds: [createEmbed({ color: config.colors.warning, description: `${config.emoji.music || '🎵'} Already paused.` })], ephemeral: true });
+    }
+    if (!queue.voiceChannel || interaction.member.voice.channelId !== queue.voiceChannel.id) {
+      return interaction.reply({ embeds: [createEmbed({ color: config.colors.error, description: `${config.emoji.cross || '❌'} You must be in the same voice channel as the bot.` })], ephemeral: true });
+    }
+    await client.music.pause(interaction.guild.id);
     await interaction.reply({ embeds: [createEmbed({ color: config.colors.warning, description: `${config.emoji.music || '🎵'} Paused.` })] });
   },
 };

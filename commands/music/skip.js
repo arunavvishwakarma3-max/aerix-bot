@@ -11,6 +11,9 @@ export default {
     if (!queue || !queue.playing) {
       return interaction.reply({ embeds: [createEmbed({ color: config.colors.error, description: `${config.emoji.cross || '❌'} Nothing is playing.` })], ephemeral: true });
     }
+    if (!queue.voiceChannel || interaction.member.voice.channelId !== queue.voiceChannel.id) {
+      return interaction.reply({ embeds: [createEmbed({ color: config.colors.error, description: `${config.emoji.cross || '❌'} You must be in the same voice channel as the bot.` })], ephemeral: true });
+    }
     client.music.skip(interaction.guild.id);
     await interaction.reply({ embeds: [createEmbed({ color: config.colors.success, description: `${config.emoji.music || '🎵'} Skipped.` })] });
   },

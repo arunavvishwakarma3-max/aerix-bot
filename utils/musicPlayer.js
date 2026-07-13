@@ -48,7 +48,7 @@ export class MusicPlayer {
 
   _broadcastReady(name) {
     for (const [guildId, queue] of this.queues) {
-      if (queue.pendingNode && queue.pendingNode === name) {
+      if (queue.pendingNode && (queue.pendingNode === name || queue.pendingNode === 'any')) {
         queue.pendingNode = null;
         if (queue.songs.length > 0 && !queue.playing) {
           this.playNext(guildId).catch(() => {});
@@ -98,6 +98,7 @@ export class MusicPlayer {
         panelMessageId: null,
         panelChannelId: null,
         pendingNode: null,
+        _eventsAttached: false,
       };
       this.queues.set(guildId, queue);
     }
@@ -111,15 +112,16 @@ export class MusicPlayer {
     const any = [...this.shoukaku.nodes.values()];
     if (any.length) {
       const fallback = any.sort((a, b) => a.penalties - b.penalties)[0];
-      if (fallback && fallback.state !== 1) {
-        logger.warn(`No connected nodes — trying to use "${fallback.name}" (state: ${fallback.state})`);
+      if (fallback) {
+        logger.warn(`No connected nodes — attempting reconnect to "${fallback.name}" (state: ${fallback.state})`);
         fallback.connect().catch(() => {});
+        return fallback;
       }
     }
     return null;
   }
 
-  async getNodeWithRetry(retries = 3, delay = 2000) {
+  async getNodeWithRetry(retries = 5, delay = 3000) {
     for (let i = 0; i < retries; i++) {
       const node = this.getNode();
       if (node) return node;
@@ -152,7 +154,7 @@ export class MusicPlayer {
 
     try {
       const search = query.match(/^https?:\/\//) ? query : `ytsearch:${query}`;
-      const node = await this.getNodeWithRetry(3, 2000);
+      const node = await this.getNodeWithRetry(5, 3000);
       if (!node) throw new Error('No Lavalink nodes available — all nodes are down. Please try again later.');
       const result = await node.rest.resolve(search);
 
@@ -169,7 +171,13 @@ export class MusicPlayer {
       }
 
       if (result.loadType === 'playlist') {
-        for (const track of tracks) {
+        const maxAdd = Math.max(0, config.music.maxQueueSize - queue.songs.length);
+        if (maxAdd === 0) {
+          await interaction.editReply({ embeds: [this.embed({ color: config.colors.warning, description: `${config.emoji.warning} Queue is full (${config.music.maxQueueSize} songs max).` })] });
+          return;
+        }
+        const toAdd = tracks.slice(0, maxAdd);
+        for (const track of toAdd) {
           queue.songs.push({
             title: track.info.title,
             uri: track.info.uri,
@@ -181,11 +189,18 @@ export class MusicPlayer {
             track: track.encoded,
           });
         }
-        if (queue.loop === 'queue' && queue.originalSongs.length === 0) {
-          queue.originalSongs = queue.songs.map(s => ({ ...s }));
-        }
-        await interaction.editReply({ embeds: [this.embed({ color: config.colors.success, description: `${config.emoji.music} Added **${tracks.length}** songs from playlist` })] });
+        this.syncLoopState(queue);
+        const skipped = tracks.length - toAdd.length;
+        const msg = skipped > 0
+          ? `${config.emoji.music} Added **${toAdd.length}** songs (${skipped} skipped — queue full)`
+          : `${config.emoji.music} Added **${toAdd.length}** songs from playlist`;
+        await interaction.editReply({ embeds: [this.embed({ color: config.colors.success, description: msg })] });
         if (!queue.playing) await this.playNext(guildId);
+        return;
+      }
+
+      if (queue.songs.length >= config.music.maxQueueSize) {
+        await interaction.editReply({ embeds: [this.embed({ color: config.colors.warning, description: `${config.emoji.warning} Queue is full (${config.music.maxQueueSize} songs max).` })] });
         return;
       }
 
@@ -202,9 +217,7 @@ export class MusicPlayer {
       };
 
       queue.songs.push(song);
-      if (queue.loop === 'queue' && queue.originalSongs.length === 0) {
-        queue.originalSongs = queue.songs.map(s => ({ ...s }));
-      }
+      this.syncLoopState(queue);
 
       if (!queue.player || !queue.connection) {
         queue.player = await this.join(vc);
@@ -231,6 +244,8 @@ export class MusicPlayer {
   setupPlayerEvents(guildId) {
     const queue = this.queues.get(guildId);
     if (!queue?.player) return;
+    if (queue._eventsAttached) return;
+    queue._eventsAttached = true;
 
     queue.player.on('start', () => {
       queue.playing = true;
@@ -481,6 +496,22 @@ export class MusicPlayer {
     if (!queue?.player) return;
     await queue.player.setPaused(!queue.paused);
     queue.paused = !queue.paused;
+    this.sendPanel(guildId);
+  }
+
+  async pause(guildId) {
+    const queue = this.queues.get(guildId);
+    if (!queue?.player || queue.paused) return;
+    await queue.player.setPaused(true);
+    queue.paused = true;
+    this.sendPanel(guildId);
+  }
+
+  async resume(guildId) {
+    const queue = this.queues.get(guildId);
+    if (!queue?.player || !queue.paused) return;
+    await queue.player.setPaused(false);
+    queue.paused = false;
     this.sendPanel(guildId);
   }
 
