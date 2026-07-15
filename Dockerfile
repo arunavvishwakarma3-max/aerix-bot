@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-RUN mkdir -p /app/database
+RUN mkdir -p /app/database /data && chown -R node:node /data
 
 COPY package*.json ./
 RUN npm install
